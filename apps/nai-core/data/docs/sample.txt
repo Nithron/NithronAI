@@ -1,0 +1,3 @@
+NithronOS is a local-first homelab operating system focused on open-core, community-driven development.
+nAI (Nithron AI) aims to provide privacy-preserving assistants with offline-by-default operations.
+This sample document exists to let you test the /ingest and /ask endpoints quickly.

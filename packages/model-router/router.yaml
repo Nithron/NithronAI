@@ -1,0 +1,2 @@
+# Placeholder for LiteLLM/Ollama routing config
+default_model: local-extractive

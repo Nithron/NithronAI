@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>nAI Docs (PoC)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial; margin: 24px; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 16px; }
+    input[type="text"] { min-width: 420px; padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #f8f8f8; padding: 12px; border-radius: 8px; }
+    .pill { padding: 2px 8px; border-radius: 999px; background: #efefef; font-size: 12px; }
+    .muted { color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>nAI Docs (PoC)</h1>
+  <div class="row">
+    <label>API Base:</label>
+    <input id="apiBase" type="text" value="http://localhost:8000" />
+    <span class="pill" id="health">checking...</span>
+  </div>
+
+  <div class="card">
+    <h3>1) Ingest documents</h3>
+    <input id="files" type="file" multiple accept=".pdf,.txt,.md" />
+    <button id="btnIngest">Upload & Index</button>
+    <div id="ingestResult" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h3>2) Ask your corpus</h3>
+    <input id="question" type="text" placeholder="e.g., What is NithronOS?" />
+    <button id="btnAsk">Ask</button>
+    <div id="answer"></div>
+    <div id="citations"></div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

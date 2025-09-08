@@ -1,0 +1,8 @@
+fastapi>=0.112
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+pydantic>=2.8
+pypdf>=5.0.0
+rank-bm25>=0.2.2
+nltk>=3.9
+aiofiles>=24.1.0
