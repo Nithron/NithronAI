@@ -1,0 +1,48 @@
+[
+  {
+    "query": "What is nAI?",
+    "relevant_docs": ["sample.txt", "README.md"],
+    "expected_answer": "nAI is a local-first AI starter for NithronOS",
+    "metadata": {
+      "category": "general",
+      "difficulty": "easy"
+    }
+  },
+  {
+    "query": "How do I ingest documents?",
+    "relevant_docs": ["sample.txt", "README.md"],
+    "expected_answer": "Use the /ingest endpoint to upload documents",
+    "metadata": {
+      "category": "usage",
+      "difficulty": "easy"
+    }
+  },
+  {
+    "query": "What file formats are supported?",
+    "relevant_docs": ["sample.txt", "README.md"],
+    "expected_answer": "PDF, Markdown, and TXT files are supported",
+    "metadata": {
+      "category": "features",
+      "difficulty": "easy"
+    }
+  },
+  {
+    "query": "How does the search work?",
+    "relevant_docs": ["sample.txt"],
+    "expected_answer": "Uses BM25 for retrieval",
+    "metadata": {
+      "category": "technical",
+      "difficulty": "medium"
+    }
+  },
+  {
+    "query": "Is an LLM required?",
+    "relevant_docs": ["sample.txt", "README.md"],
+    "expected_answer": "No external LLM is required, but one can be plugged in later",
+    "metadata": {
+      "category": "requirements",
+      "difficulty": "easy"
+    }
+  }
+]
+

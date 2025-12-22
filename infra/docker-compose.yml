@@ -1,16 +1,146 @@
 version: "3.9"
+
+# nAI Stack - Docker Compose Configuration
+# =========================================
+# 
+# Usage:
+#   Development: docker-compose up -d
+#   Production:  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Services:
+#   - nai-core: FastAPI backend (required)
+#   - nai-web: Static web UI (optional)
+#   - qdrant: Vector database for embeddings (optional)
+#   - ollama: Local LLM server (optional)
+
 services:
+  # ====================
+  # Core Services
+  # ====================
+  
   nai-core:
-    build: ../apps/nai-core
+    build:
+      context: ../apps/nai-core
+      dockerfile: Dockerfile
+    container_name: nai-core
+    restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
-      - ../apps/nai-core/data:/app/data
+      - nai-data:/app/data
+      - ../apps/nai-core/app:/app/app:ro  # Hot reload in dev
     environment:
-      - NAI_ALLOW_NETWORK=false
-  # qdrant:
-  #   image: qdrant/qdrant:latest
-  #   ports: ["6333:6333", "6334:6334"]
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports: ["11434:11434"]
+      # Core
+      - NAI_DEBUG=true
+      - NAI_LOG_LEVEL=INFO
+      - NAI_CORS_ALLOW_ALL=true
+      
+      # LLM (connect to Ollama)
+      - NAI_LLM_ENABLED=true
+      - NAI_LLM_PROVIDER=ollama
+      - NAI_LLM_MODEL=llama3.2
+      - NAI_LLM_BASE_URL=http://ollama:11434
+      
+      # Embeddings
+      - NAI_EMBEDDINGS_ENABLED=true
+      - NAI_EMBEDDINGS_MODEL=sentence-transformers/all-MiniLM-L6-v2
+      
+      # Qdrant
+      - NAI_QDRANT_ENABLED=true
+      - NAI_QDRANT_HOST=qdrant
+      - NAI_QDRANT_PORT=6333
+      
+      # Auth (disabled for dev)
+      - NAI_AUTH_ENABLED=false
+      
+      # Rate limiting
+      - NAI_RATE_LIMIT_ENABLED=true
+      - NAI_RATE_LIMIT_REQUESTS=100
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    networks:
+      - nai-network
+
+  nai-web:
+    image: nginx:alpine
+    container_name: nai-web
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    volumes:
+      - ../apps/nai-docs/web:/usr/share/nginx/html:ro
+    networks:
+      - nai-network
+
+  # ====================
+  # Vector Database
+  # ====================
+  
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: nai-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC
+    volumes:
+      - qdrant-data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nai-network
+
+  # ====================
+  # Local LLM Server
+  # ====================
+  
+  ollama:
+    image: ollama/ollama:latest
+    container_name: nai-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    # GPU support (uncomment for NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    networks:
+      - nai-network
+
+# ====================
+# Networks
+# ====================
+
+networks:
+  nai-network:
+    driver: bridge
+
+# ====================
+# Volumes
+# ====================
+
+volumes:
+  nai-data:
+    driver: local
+  qdrant-data:
+    driver: local
+  ollama-data:
+    driver: local

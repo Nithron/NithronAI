@@ -1,8 +1,50 @@
-fastapi>=0.112
-uvicorn[standard]>=0.30
-python-multipart>=0.0.9
-pydantic>=2.8
-pypdf>=5.0.0
-rank-bm25>=0.2.2
-nltk>=3.9
+# nAI Core Dependencies
+# ======================
+
+# Core Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.10.0
+pydantic-settings>=2.6.0
+
+# Request handling
+python-multipart>=0.0.12
 aiofiles>=24.1.0
+aiohttp>=3.11.0
+
+# Document Processing
+pypdf>=5.1.0
+nltk>=3.9.0
+
+# Search
+rank-bm25>=0.2.2
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Logging
+# (using stdlib logging, no extra deps)
+
+# ======================
+# Optional Dependencies
+# ======================
+
+# LLM Integration (enable with NAI_LLM_ENABLED=true)
+litellm>=1.52.0
+
+# Embeddings (enable with NAI_EMBEDDINGS_ENABLED=true)
+sentence-transformers>=3.3.0
+torch>=2.0.0
+
+# Vector Store (enable with NAI_QDRANT_ENABLED=true)
+qdrant-client>=1.12.0
+
+# ======================
+# Development
+# ======================
+# pytest>=8.0.0
+# pytest-asyncio>=0.24.0
+# httpx>=0.28.0
+# ruff>=0.8.0
+# mypy>=1.13.0
