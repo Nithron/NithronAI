@@ -1,0 +1,72 @@
+[project]
+name = "nai-rag-kit"
+version = "0.1.0"
+description = "RAG utilities: chunkers, rerankers, and evaluators for nAI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "AGPL-3.0-only"}
+authors = [
+    {name = "Nithron Team", email = "dev@nithron.io"}
+]
+keywords = ["rag", "retrieval", "chunking", "reranking", "evaluation", "nlp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "nltk>=3.8",
+]
+
+[project.optional-dependencies]
+rerankers = [
+    "sentence-transformers>=2.2.0",
+    "cohere>=4.0",
+]
+evaluators = [
+    "litellm>=1.0",
+]
+all = [
+    "sentence-transformers>=2.2.0",
+    "cohere>=4.0",
+    "litellm>=1.0",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.1",
+    "mypy>=1.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/Nithronverse/nAI"
+Documentation = "https://github.com/Nithronverse/nAI/tree/main/packages/rag-kit"
+Repository = "https://github.com/Nithronverse/nAI"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+

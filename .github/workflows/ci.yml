@@ -1,0 +1,221 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  PYTHON_VERSION: "3.11"
+  NAI_DEBUG: "true"
+  NAI_LLM_ENABLED: "false"
+  NAI_EMBEDDINGS_ENABLED: "false"
+  NAI_AUTH_ENABLED: "false"
+
+jobs:
+  # ====================
+  # Linting & Type Check
+  # ====================
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'apps/nai-core/requirements.txt'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+          pip install -r apps/nai-core/requirements.txt
+      
+      - name: Run Ruff (linter)
+        run: |
+          ruff check apps/nai-core/app --output-format=github
+      
+      - name: Run Ruff (formatter check)
+        run: |
+          ruff format apps/nai-core/app --check
+      
+      - name: Run MyPy (type check)
+        run: |
+          mypy apps/nai-core/app --ignore-missing-imports --no-error-summary
+        continue-on-error: true  # Allow type errors during initial development
+
+  # ====================
+  # Tests
+  # ====================
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'apps/nai-core/requirements.txt'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-asyncio pytest-cov httpx
+          pip install -r apps/nai-core/requirements.txt
+      
+      - name: Download NLTK data
+        run: |
+          python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True)"
+      
+      - name: Run tests
+        working-directory: apps/nai-core
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+        continue-on-error: true  # Allow missing tests initially
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: apps/nai-core/coverage.xml
+          fail_ci_if_error: false
+
+  # ====================
+  # API Integration Test
+  # ====================
+  api-test:
+    name: API Integration Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r apps/nai-core/requirements.txt
+          pip install httpx
+      
+      - name: Download NLTK data
+        run: |
+          python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True)"
+      
+      - name: Start API server
+        working-directory: apps/nai-core
+        run: |
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+      
+      - name: Health check
+        run: |
+          curl -f http://localhost:8000/health
+      
+      - name: Test ingest endpoint
+        run: |
+          echo "Test document for nAI" > test_doc.txt
+          curl -X POST http://localhost:8000/ingest \
+            -F "files=@test_doc.txt" \
+            -f
+      
+      - name: Test ask endpoint
+        run: |
+          curl -X POST http://localhost:8000/ask \
+            -H "Content-Type: application/json" \
+            -d '{"question": "What is this document about?", "top_k": 3}' \
+            -f
+
+  # ====================
+  # Docker Build
+  # ====================
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/nai-core
+          push: false
+          tags: nai-core:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Test Docker image
+        run: |
+          docker run -d --name nai-test -p 8000:8000 nai-core:test
+          sleep 10
+          curl -f http://localhost:8000/health
+          docker stop nai-test
+
+  # ====================
+  # Retrieval Evaluation
+  # ====================
+  eval:
+    name: Retrieval Evaluation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, api-test]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          pip install -r apps/nai-core/requirements.txt
+          pip install httpx
+      
+      - name: Download NLTK data
+        run: |
+          python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True)"
+      
+      - name: Start API server
+        working-directory: apps/nai-core
+        run: |
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+      
+      - name: Ingest sample documents
+        run: |
+          curl -X POST http://localhost:8000/ingest \
+            -F "files=@apps/nai-core/data/docs/sample.txt"
+      
+      - name: Run evaluation
+        run: |
+          python evals/retrieval/eval_retrieval.py \
+            --test-file evals/retrieval/test_cases.json \
+            --api-url http://localhost:8000 \
+            --output eval_results.json
+        continue-on-error: true
+      
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: eval_results.json
+        if: always()
+
