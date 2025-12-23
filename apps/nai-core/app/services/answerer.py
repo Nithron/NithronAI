@@ -3,7 +3,7 @@ nAI Core Answerer Service
 Answer generation with extractive fallback and LLM support
 """
 
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Optional, Tuple
 import os
 
 from ..config import Settings, get_settings

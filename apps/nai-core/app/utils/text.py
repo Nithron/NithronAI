@@ -4,7 +4,7 @@ Chunking, normalization, tokenization
 """
 
 import re
-from typing import List, Tuple, Optional
+from typing import List
 import nltk
 
 # Ensure NLTK data is available

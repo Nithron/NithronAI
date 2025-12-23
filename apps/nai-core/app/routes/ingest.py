@@ -3,7 +3,7 @@ nAI Core Ingest Routes
 Document ingestion and indexing endpoints
 """
 
-from typing import List, Optional
+from typing import List
 
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query
 

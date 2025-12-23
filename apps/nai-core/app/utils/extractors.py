@@ -3,10 +3,9 @@ nAI Core Text Extractors
 Extract text from various file formats
 """
 
-import os
 import hashlib
 import re
-from typing import Tuple, Optional, Dict, Any
+from typing import Tuple, Dict, Any
 from pathlib import Path
 
 

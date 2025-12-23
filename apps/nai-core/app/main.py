@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
     
     indexer = get_indexer()
     retriever = get_retriever()
-    answerer = get_answerer()
+    _ = get_answerer()  # Initialize answerer singleton
     
     # Pre-load index
     records = indexer.load_index()

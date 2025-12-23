@@ -7,7 +7,6 @@ import uuid
 from typing import Optional, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import StreamingResponse
 
 from ..config import Settings, get_config
 from ..models.schemas import (

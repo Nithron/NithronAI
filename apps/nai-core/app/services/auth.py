@@ -5,11 +5,9 @@ JWT-based authentication with user management
 
 import os
 import json
-import hashlib
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
-from pathlib import Path
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext

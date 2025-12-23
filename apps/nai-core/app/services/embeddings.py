@@ -4,11 +4,10 @@ Vector embeddings with sentence-transformers and Qdrant integration
 """
 
 from typing import List, Dict, Any, Optional
-import os
 import uuid
 
 from ..config import Settings, get_settings
-from ..models.schemas import SearchResult, ChunkRecord
+from ..models.schemas import SearchResult
 from ..utils.logging import get_logger
 
 logger = get_logger(__name__)

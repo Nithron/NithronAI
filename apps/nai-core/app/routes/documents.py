@@ -3,8 +3,6 @@ nAI Core Document Routes
 Document management endpoints
 """
 
-from typing import Optional
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from ..config import Settings, get_config

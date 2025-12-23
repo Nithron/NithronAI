@@ -3,9 +3,7 @@ nAI Core Ask Routes
 Question answering and search endpoints
 """
 
-from typing import Optional
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from ..config import Settings, get_config
 from ..models.schemas import (

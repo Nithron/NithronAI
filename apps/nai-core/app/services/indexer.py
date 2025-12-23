@@ -9,7 +9,6 @@ import hashlib
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
-from functools import lru_cache
 
 from fastapi import UploadFile
 
@@ -20,7 +19,7 @@ from ..models.schemas import (
     IngestFileResult,
 )
 from ..utils.text import chunk_text_semantic, normalize_text
-from ..utils.extractors import extract_text, get_file_hash
+from ..utils.extractors import extract_text
 from ..utils.logging import get_logger
 
 logger = get_logger(__name__)

@@ -3,9 +3,7 @@ nAI Core Retriever Service
 BM25 and hybrid search with caching
 """
 
-import re
 from typing import List, Dict, Any, Optional, Tuple
-from functools import lru_cache
 import threading
 
 from rank_bm25 import BM25Okapi
