@@ -18,9 +18,17 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies
+# Use requirements.txt for lightweight build
+# Use requirements-full.txt for full ML capabilities
 COPY requirements.txt .
+COPY requirements-full.txt .
+ARG INSTALL_FULL=false
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    if [ "$INSTALL_FULL" = "true" ]; then \
+        pip install --no-cache-dir -r requirements-full.txt; \
+    else \
+        pip install --no-cache-dir -r requirements.txt; \
+    fi
 
 # Download NLTK data
 RUN python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True)"

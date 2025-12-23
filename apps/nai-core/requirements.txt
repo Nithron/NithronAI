@@ -27,24 +27,14 @@ passlib[bcrypt]>=1.7.4
 # (using stdlib logging, no extra deps)
 
 # ======================
-# Optional Dependencies
+# Optional: Install separately if needed
 # ======================
+# LLM Integration (pip install litellm)
+# litellm>=1.52.0
 
-# LLM Integration (enable with NAI_LLM_ENABLED=true)
-litellm>=1.52.0
+# Embeddings (pip install sentence-transformers torch)
+# sentence-transformers>=3.3.0
+# torch>=2.0.0
 
-# Embeddings (enable with NAI_EMBEDDINGS_ENABLED=true)
-sentence-transformers>=3.3.0
-torch>=2.0.0
-
-# Vector Store (enable with NAI_QDRANT_ENABLED=true)
-qdrant-client>=1.12.0
-
-# ======================
-# Development
-# ======================
-# pytest>=8.0.0
-# pytest-asyncio>=0.24.0
-# httpx>=0.28.0
-# ruff>=0.8.0
-# mypy>=1.13.0
+# Vector Store (pip install qdrant-client)
+# qdrant-client>=1.12.0

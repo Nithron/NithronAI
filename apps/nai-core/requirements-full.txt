@@ -1,0 +1,17 @@
+# nAI Core Full Dependencies
+# ===========================
+# Use this for full functionality including LLM and embeddings
+
+# Core (always required)
+-r requirements.txt
+
+# LLM Integration
+litellm>=1.52.0
+
+# Embeddings
+sentence-transformers>=3.3.0
+torch>=2.0.0
+
+# Vector Store
+qdrant-client>=1.12.0
+
